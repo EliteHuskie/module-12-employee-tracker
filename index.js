@@ -103,3 +103,42 @@ function start() {
       }
     });
 }
+
+// Function to view all departments
+function viewAllDepartments() {
+    // Perform SQL query to retrieve all departments
+    const query = 'SELECT * FROM departments';
+    connection.query(query, (err, res) => {
+      if (err) throw err;
+      // Display retrieved departments
+      console.log('Departments:');
+      console.table(res);
+      start();
+    });
+  }
+  
+  // Function to view all roles
+  function viewAllRoles() {
+    // Perform SQL query to retrieve all roles
+    const query = 'SELECT * FROM roles';
+    connection.query(query, (err, res) => {
+      if (err) throw err;
+      // Display retrieved roles
+      console.log('Roles:');
+      console.table(res);
+      start();
+    });
+  }
+  
+  // Function to view all employees
+  function viewAllEmployees() {
+    // Perform SQL query to retrieve all employees
+    const query = 'SELECT * FROM employees';
+    connection.query(query, (err, res) => {
+      if (err) throw err;
+      // Display retrieved employees
+      console.log('Employees:');
+      console.table(res);
+      start();
+    });
+  }
