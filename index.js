@@ -32,19 +32,19 @@ function start() {
       type: 'list',
       message: 'Please select an action from the menu.',
       choices: [
-        'View all departments',
-        'View all roles',
-        'View all employees',
         'Add a department',
-        'Add a role',
         'Add an employee',
+        'Add a role',
+        'Delete a department',
+        'Delete an employee',
+        'Delete a role',
         'Update an employee role',
         'Update employee manager',
-        'View employees by manager',
+        'View all departments',
+        'View all employees',
+        'View all roles',
         'View employees by department',
-        'Delete a department',
-        'Delete a role',
-        'Delete an employee',
+        'View employees by manager',
         'View total utilized budget of a department',
         'Exit'
       ]
@@ -573,20 +573,3 @@ function viewDepartmentBudget() {
     start();
   });
 }
-app.get('/employees', (req, res) => {
-    // Perform a database query to retrieve employees
-    db.query('SELECT * FROM employees', (err, results) => {
-      if (err) {
-        console.error('Error retrieving employees:', err);
-        // Handle the error and send an appropriate response
-        res.status(500).json({ error: 'An error occurred while retrieving employees.' });
-        return;
-      }
-  
-      // Construct a response with retrieved data
-      const employees = results;
-  
-      // Send the response
-      res.json({ employees });
-    });
-  });
