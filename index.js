@@ -307,3 +307,78 @@ function addEmployee() {
     });
   });
 }
+
+// Function to update an employee's manager
+function updateEmployeeManager() {
+  // Perform SQL query to retrieve all employees
+  const employeeQuery = 'SELECT * FROM employees';
+  connection.query(employeeQuery, (err, employees) => {
+    if (err) throw err;
+    // Prompt the user to select the employee and new manager
+    inquirer
+      .prompt([
+        {
+          name: 'employeeId',
+          type: 'list',
+          message: 'Select the employee to update:',
+          choices: employees.map((employee) => ({
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id
+          }))
+        },
+        {
+          name: 'managerId',
+          type: 'list',
+          message: 'Select the new manager for the employee:',
+          choices: [
+            { name: 'None', value: null },
+            ...employees.map((employee) => ({
+              name: `${employee.first_name} ${employee.last_name}`,
+              value: employee.id
+            }))
+          ]
+        }
+      ])
+      .then((answer) => {
+        // Update the employee's manager in the database
+        const query = 'UPDATE employees SET manager_id = ? WHERE id = ?';
+        connection.query(
+          query,
+          [answer.managerId, answer.employeeId],
+          (err) => {
+            if (err) throw err;
+            console.log('Employee manager updated successfully!');
+            start();
+          }
+        );
+      });
+  });
+}
+
+// Function to view employees by manager
+function viewEmployeesByManager() {
+  // Perform SQL query to retrieve all employees and their managers
+  const query = `
+    SELECT 
+      e.id, 
+      e.first_name, 
+      e.last_name, 
+      r.title AS role,
+      d.name AS department,
+      CONCAT(m.first_name, ' ', m.last_name) AS manager
+    FROM 
+      employees AS e
+      LEFT JOIN roles AS r ON e.role_id = r.id
+      LEFT JOIN departments AS d ON r.department_id = d.id
+      LEFT JOIN employees AS m ON e.manager_id = m.id
+    ORDER BY 
+      manager, e.id
+  `;
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+    // Display the employees grouped by manager
+    console.log('Employees by Manager:');
+    console.table(res);
+    start();
+  });
+}
