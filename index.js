@@ -382,3 +382,60 @@ function viewEmployeesByManager() {
     start();
   });
 }
+
+// Function to view employees by department
+function viewEmployeesByDepartment() {
+  // Perform SQL query to retrieve all employees and their departments
+  const query = `
+    SELECT 
+      e.id, 
+      e.first_name, 
+      e.last_name, 
+      r.title AS role,
+      d.name AS department
+    FROM 
+      employees AS e
+      LEFT JOIN roles AS r ON e.role_id = r.id
+      LEFT JOIN departments AS d ON r.department_id = d.id
+    ORDER BY 
+      department, e.id
+  `;
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+    // Display the employees grouped by department
+    console.log('Employees by Department:');
+    console.table(res);
+    start();
+  });
+}
+
+// Function to delete a department
+function deleteDepartment() {
+  // Perform SQL query to retrieve all departments
+  const query = 'SELECT * FROM departments';
+  connection.query(query, (err, departments) => {
+    if (err) throw err;
+    // Prompt user to select department to delete
+    inquirer
+      .prompt([
+        {
+          name: 'departmentId',
+          type: 'list',
+          message: 'Select the department to delete:',
+          choices: departments.map((department) => ({
+            name: department.name,
+            value: department.id
+          }))
+        }
+      ])
+      .then((answer) => {
+        // Delete selected department from the database
+        const deleteQuery = 'DELETE FROM departments WHERE id = ?';
+        connection.query(deleteQuery, answer.departmentId, (err) => {
+          if (err) throw err;
+          console.log('Department deleted successfully!');
+          start();
+        });
+      });
+  });
+}
