@@ -211,7 +211,7 @@ function addRole() {
         }
       ])
       .then((answer) => {
-        // Insert ew role into database
+        // Insert new role into database
         const query = 'INSERT INTO roles SET ?';
         connection.query(
           query,
@@ -227,5 +227,83 @@ function addRole() {
           }
         );
       });
+  });
+}
+
+// Function to add an employee
+function addEmployee() {
+  // Perform SQL query to retrieve all roles and employees
+  const roleQuery = 'SELECT * FROM roles';
+  const employeeQuery = 'SELECT * FROM employees';
+  connection.query(roleQuery, (err, roles) => {
+    if (err) throw err;
+    connection.query(employeeQuery, (err, employees) => {
+      if (err) throw err;
+      // Prompt user to enter employee details
+      inquirer
+        .prompt([
+          {
+            name: 'firstName',
+            type: 'input',
+            message: 'Enter first name of employee:',
+            validate: (value) => {
+              if (value.trim()) {
+                return true;
+              }
+              return 'Please enter the first name.';
+            }
+          },
+          {
+            name: 'lastName',
+            type: 'input',
+            message: 'Enter last name of employee:',
+            validate: (value) => {
+              if (value.trim()) {
+                return true;
+              }
+              return 'Please enter the last name.';
+            }
+          },
+          {
+            name: 'roleId',
+            type: 'list',
+            message: 'Select role for employee:',
+            choices: roles.map((role) => ({
+              name: role.title,
+              value: role.id
+            }))
+          },
+          {
+            name: 'managerId',
+            type: 'list',
+            message: 'Select manager for employee:',
+            choices: [
+              { name: 'None', value: null },
+              ...employees.map((employee) => ({
+                name: `${employee.first_name} ${employee.last_name}`,
+                value: employee.id
+              }))
+            ]
+          }
+        ])
+        .then((answer) => {
+          // Insert new employee into database
+          const query = 'INSERT INTO employees SET ?';
+          connection.query(
+            query,
+            {
+              first_name: answer.firstName,
+              last_name: answer.lastName,
+              role_id: answer.roleId,
+              manager_id: answer.managerId
+            },
+            (err) => {
+              if (err) throw err;
+              console.log('Employee added successfully!');
+              start();
+            }
+          );
+        });
+    });
   });
 }
