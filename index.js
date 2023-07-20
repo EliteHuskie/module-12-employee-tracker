@@ -308,6 +308,54 @@ function addEmployee() {
   });
 }
 
+// Function to update an employee's role
+function updateEmployeeRole() {
+  // Perform SQL query to retrieve all employees and roles
+  const employeeQuery = 'SELECT * FROM employees';
+  const roleQuery = 'SELECT * FROM roles';
+  connection.query(employeeQuery, (err, employees) => {
+    if (err) throw err;
+    connection.query(roleQuery, (err, roles) => {
+      if (err) throw err;
+      // Prompt user to select the employee and new role
+      inquirer
+        .prompt([
+          {
+            name: 'employeeId',
+            type: 'list',
+            message: 'Select the employee to update:',
+            choices: employees.map((employee) => ({
+              name: `${employee.first_name} ${employee.last_name}`,
+              value: employee.id
+            }))
+          },
+          {
+            name: 'roleId',
+            type: 'list',
+            message: 'Select the new role for the employee:',
+            choices: roles.map((role) => ({
+              name: role.title,
+              value: role.id
+            }))
+          }
+        ])
+        .then((answer) => {
+          // Update employee's role in the database
+          const query = 'UPDATE employees SET role_id = ? WHERE id = ?';
+          connection.query(
+            query,
+            [answer.roleId, answer.employeeId],
+            (err) => {
+              if (err) throw err;
+              console.log('Employee role updated successfully!');
+              start();
+            }
+          );
+        });
+    });
+  });
+}
+
 // Function to update an employee's manager
 function updateEmployeeManager() {
   // Perform SQL query to retrieve all employees
@@ -501,3 +549,44 @@ function deleteEmployee() {
       });
   });
 }
+
+// Function to view total utilized budget of a department
+function viewDepartmentBudget() {
+  // Perform SQL query to calculate total utilized budget of each department
+  const query = `
+    SELECT 
+      d.id, 
+      d.name AS department,
+      SUM(r.salary) AS utilized_budget
+    FROM 
+      departments AS d
+      LEFT JOIN roles AS r ON d.id = r.department_id
+      LEFT JOIN employees AS e ON r.id = e.role_id
+    GROUP BY 
+      d.id, d.name
+  `;
+  connection.query(query, (err, res) => {
+    if (err) throw err;
+    // Display total utilized budget for each department
+    console.log('Total Utilized Budget by Department:');
+    console.table(res);
+    start();
+  });
+}
+app.get('/employees', (req, res) => {
+    // Perform a database query to retrieve employees
+    db.query('SELECT * FROM employees', (err, results) => {
+      if (err) {
+        console.error('Error retrieving employees:', err);
+        // Handle the error and send an appropriate response
+        res.status(500).json({ error: 'An error occurred while retrieving employees.' });
+        return;
+      }
+  
+      // Construct a response with retrieved data
+      const employees = results;
+  
+      // Send the response
+      res.json({ employees });
+    });
+  });
