@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/EliteHuskie/module-12-employee-tracker#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.3.1",
     "inquirer": "^9.2.8",
     "mysql2": "^3.5.2"
