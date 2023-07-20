@@ -439,3 +439,65 @@ function deleteDepartment() {
       });
   });
 }
+
+// Function to delete a role
+function deleteRole() {
+  // Perform SQL query to retrieve all roles
+  const query = 'SELECT * FROM roles';
+  connection.query(query, (err, roles) => {
+    if (err) throw err;
+    // Prompt user to select the role to delete
+    inquirer
+      .prompt([
+        {
+          name: 'roleId',
+          type: 'list',
+          message: 'Select the role to delete:',
+          choices: roles.map((role) => ({
+            name: role.title,
+            value: role.id
+          }))
+        }
+      ])
+      .then((answer) => {
+        // Delete selected role from the database
+        const deleteQuery = 'DELETE FROM roles WHERE id = ?';
+        connection.query(deleteQuery, answer.roleId, (err) => {
+          if (err) throw err;
+          console.log('Role deleted successfully!');
+          start();
+        });
+      });
+  });
+}
+
+// Function to delete an employee
+function deleteEmployee() {
+  // Perform SQL query to retrieve all employees
+  const query = 'SELECT * FROM employees';
+  connection.query(query, (err, employees) => {
+    if (err) throw err;
+    // Prompt user to select the employee to delete
+    inquirer
+      .prompt([
+        {
+          name: 'employeeId',
+          type: 'list',
+          message: 'Select the employee to delete:',
+          choices: employees.map((employee) => ({
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id
+          }))
+        }
+      ])
+      .then((answer) => {
+        // Delete selected employee from the database
+        const deleteQuery = 'DELETE FROM employees WHERE id = ?';
+        connection.query(deleteQuery, answer.employeeId, (err) => {
+          if (err) throw err;
+          console.log('Employee deleted successfully!');
+          start();
+        });
+      });
+  });
+}
