@@ -142,3 +142,90 @@ function viewAllDepartments() {
       start();
     });
   }
+
+// Function to add a department
+function addDepartment() {
+  // Prompt user to enter department name
+  inquirer
+    .prompt([
+      {
+        name: 'name',
+        type: 'input',
+        message: 'Enter name of department:',
+        validate: (value) => {
+          if (value.trim()) {
+            return true;
+          }
+          return 'Please enter a department name.';
+        }
+      }
+    ])
+    .then((answer) => {
+      // Insert new department into database
+      const query = 'INSERT INTO departments SET ?';
+      connection.query(query, { name: answer.name }, (err) => {
+        if (err) throw err;
+        console.log('Department added successfully!');
+        start();
+      });
+    });
+}
+
+// Function to add a role
+function addRole() {
+  // Perform SQL query to retrieve all departments
+  const departmentQuery = 'SELECT * FROM departments';
+  connection.query(departmentQuery, (err, departments) => {
+    if (err) throw err;
+    // Prompt user to enter role details
+    inquirer
+      .prompt([
+        {
+          name: 'title',
+          type: 'input',
+          message: 'Enter title of role:',
+          validate: (value) => {
+            if (value.trim()) {
+              return true;
+            }
+            return 'Please enter a role title.';
+          }
+        },
+        {
+          name: 'salary',
+          type: 'input',
+          message: 'Enter salary for role:',
+          validate: (value) => {
+            const valid = !isNaN(parseFloat(value));
+            return valid || 'Please enter a valid salary.';
+          }
+        },
+        {
+          name: 'departmentId',
+          type: 'list',
+          message: 'Select department for role:',
+          choices: departments.map((department) => ({
+            name: department.name,
+            value: department.id
+          }))
+        }
+      ])
+      .then((answer) => {
+        // Insert ew role into database
+        const query = 'INSERT INTO roles SET ?';
+        connection.query(
+          query,
+          {
+            title: answer.title,
+            salary: answer.salary,
+            department_id: answer.departmentId
+          },
+          (err) => {
+            if (err) throw err;
+            console.log('Role added successfully!');
+            start();
+          }
+        );
+      });
+  });
+}
