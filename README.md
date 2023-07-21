@@ -24,6 +24,8 @@ Employee Tracker allows you to keep track of Departments, Employees and Roles
 
 Keep track of Departments, Employees and Roles data for company using a command-line application
 
+![Employee Tracker App](./assets/images/employee-tracker-demo.gif)
+
 ## Installation
 
 Clone the repository
@@ -32,7 +34,7 @@ Install the required modules by running 'npm install'
 
 Run the schema that is included with 'database.sql' file
 
-Start application using 'npm start'
+Start application using 'node index.js'
 
 ## Contributing
 
@@ -40,7 +42,7 @@ Not Applicable
 
 ## Tests
 
-Use application in command-line with 'npm start'
+Use application in command-line with 'node index.js'
 
 Run through the various options in the menu for testing
 
