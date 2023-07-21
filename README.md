@@ -26,6 +26,8 @@ Keep track of Departments, Employees and Roles data for company using a command-
 
 ![Employee Tracker App](./assets/images/employee-tracker-demo.gif)
 
+Demo video can be viewed at: https://drive.google.com/file/d/1k5IH30LCKfP6LXQOu4AfsSkCxx_7Mf8n/view?usp=sharing
+
 ## Installation
 
 Clone the repository
